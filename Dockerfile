@@ -22,8 +22,8 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Remove dev dependencies after build
-RUN npm ci --only=production && npm cache clean --force
+# Clean up and keep only production dependencies
+RUN npm prune --production && npm cache clean --force
 
 
 FROM node:22-alpine AS production
