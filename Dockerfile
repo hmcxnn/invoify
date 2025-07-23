@@ -6,10 +6,13 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-COPY package* .
-RUN npm ci --only=production --ignore-scripts
+COPY package*.json ./
+RUN npm ci --ignore-scripts
 COPY . .
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm ci --only=production --ignore-scripts && npm cache clean --force
 
 
 FROM node:22-alpine AS production
