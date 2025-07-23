@@ -22,6 +22,9 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# Create missing font-manifest.json file that Next.js expects
+RUN echo '{}' > .next/server/font-manifest.json
+
 # Clean up and keep only production dependencies
 RUN npm prune --production && npm cache clean --force
 
