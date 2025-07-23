@@ -3,6 +3,8 @@ const nextConfig = {
     experimental: {
         serverComponentsExternalPackages: ["puppeteer-core"],
     },
+    // Disable font optimization in Docker builds to prevent network timeouts
+    optimizeFonts: false,
     webpack: (config) => {
         config.module.rules.push({
             test: /\.map$/,
