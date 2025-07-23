@@ -12,15 +12,21 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont
 
-# Disable Next.js telemetry and set Puppeteer to skip chromium download
+# Disable Next.js telemetry and skip font downloads during build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV SKIP_FONT_DOWNLOAD=true
 
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+
+# Set network timeout for npm and add retry logic
+RUN npm config set fetch-timeout 10000 && \
+    npm config set fetch-retry-mintimeout 2000 && \
+    npm config set fetch-retry-maxtimeout 10000 && \
+    npm run build
 
 # Remove dev dependencies after build
 RUN npm ci --only=production && npm cache clean --force
