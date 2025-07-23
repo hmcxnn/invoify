@@ -31,36 +31,29 @@ export async function generatePdfService(req: NextRequest) {
 		const InvoiceTemplate = await getInvoiceTemplate(templateId);
 		const htmlTemplate = ReactDOMServer.renderToStaticMarkup(InvoiceTemplate(body));
 
-		if (ENV === "production") {
-			const puppeteer = await import("puppeteer-core");
-			
-			// In Docker container, use system-installed Chromium
-			const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || await chromium.executablePath(CHROMIUM_EXECUTABLE_PATH);
-			console.log("Using Chromium executable path:", executablePath);
-			
-			browser = await puppeteer.launch({
-				args: [
-					"--no-sandbox",
-					"--disable-setuid-sandbox", 
-					"--disable-dev-shm-usage",
-					"--disable-accelerated-2d-canvas",
-					"--no-first-run",
-					"--no-zygote",
-					"--single-process",
-					"--disable-gpu"
-				],
-				defaultViewport: { width: 1920, height: 1080 },
-				executablePath: executablePath,
-				headless: true,
-				ignoreHTTPSErrors: true,
-			});
-		} else {
-			const puppeteer = await import("puppeteer");
-			browser = await puppeteer.launch({
-				args: ["--no-sandbox", "--disable-setuid-sandbox"],
-				headless: "new",
-			});
-		}
+		// Use puppeteer instead of puppeteer-core for better Docker compatibility
+		const puppeteer = await import("puppeteer");
+		console.log("Using Puppeteer with system Chromium");
+		
+		browser = await puppeteer.launch({
+			args: [
+				"--no-sandbox",
+				"--disable-setuid-sandbox", 
+				"--disable-dev-shm-usage",
+				"--disable-accelerated-2d-canvas",
+				"--no-first-run",
+				"--no-zygote",
+				"--single-process",
+				"--disable-gpu",
+				"--disable-background-timer-throttling",
+				"--disable-backgrounding-occluded-windows",
+				"--disable-renderer-backgrounding"
+			],
+			defaultViewport: { width: 1920, height: 1080 },
+			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+			headless: true,
+			ignoreHTTPSErrors: true,
+		});
 
 		if (!browser) {
 			throw new Error("Failed to launch browser");
