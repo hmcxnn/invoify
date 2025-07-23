@@ -1,9 +1,24 @@
 [![Discord](https://img.shields.io/badge/Discord-%40Invoify-000000?style=flat&logo=Discord&logoColor=#5865F2)](https://discord.gg/uhXKHbVKHZ)
+[![Docker Build](https://github.com/hmcxnn/invoify/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/hmcxnn/invoify/actions/workflows/docker-publish.yml)
+
 # Invoify
 
 Invoify is a web-based invoice generator application built with Next.js 13, TypeScript, React, and the Shadcn UI library. It provides an easy way to create and manage professional invoices.
 
 ![Invoify Website image](/public/assets/img/invoify-web-app.png)
+
+## 🚀 Quick Start
+
+### Using Docker
+
+```bash
+# Pull and run the latest Docker image
+docker run -p 3000:3000 ghcr.io/hmcxnn/invoify:latest
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Local Development
 
 ## Table of Contents
 
