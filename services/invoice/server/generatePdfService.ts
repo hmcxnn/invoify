@@ -36,10 +36,20 @@ export async function generatePdfService(req: NextRequest) {
 			
 			// In Docker container, use system-installed Chromium
 			const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || await chromium.executablePath(CHROMIUM_EXECUTABLE_PATH);
+			console.log("Using Chromium executable path:", executablePath);
 			
 			browser = await puppeteer.launch({
-				args: [...chromium.args, "--disable-dev-shm-usage", "--no-sandbox", "--disable-setuid-sandbox"],
-				defaultViewport: chromium.defaultViewport,
+				args: [
+					"--no-sandbox",
+					"--disable-setuid-sandbox", 
+					"--disable-dev-shm-usage",
+					"--disable-accelerated-2d-canvas",
+					"--no-first-run",
+					"--no-zygote",
+					"--single-process",
+					"--disable-gpu"
+				],
+				defaultViewport: { width: 1920, height: 1080 },
 				executablePath: executablePath,
 				headless: true,
 				ignoreHTTPSErrors: true,
