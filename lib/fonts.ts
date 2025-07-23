@@ -19,30 +19,34 @@ export const dancingScript = Dancing_Script({
     subsets: ["latin"],
     weight: "400",
     variable: "--font-dancing-script",
-    preload: true,
-    display: "swap",
+    preload: false,
+    display: "optional",
+    fallback: ["cursive"],
 });
 
 export const parisienne = Parisienne({
     subsets: ["latin"],
     weight: "400",
     variable: "--font-parisienne",
-    preload: true,
-    display: "swap",
+    preload: false,
+    display: "optional",
+    fallback: ["cursive"],
 });
 
 export const greatVibes = Great_Vibes({
     subsets: ["latin"],
     weight: "400",
     variable: "--font-great-vibes",
-    preload: true,
-    display: "swap",
+    preload: false,
+    display: "optional",
+    fallback: ["cursive"],
 });
 
 export const alexBrush = Alex_Brush({
     subsets: ["latin"],
     weight: "400",
     variable: "--font-alex-brush",
-    preload: true,
-    display: "swap",
+    preload: false,
+    display: "optional",
+    fallback: ["cursive"],
 });
