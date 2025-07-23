@@ -7,46 +7,59 @@ import {
     Parisienne,
 } from "next/font/google";
 
+// Create font configurations with failsafe settings
+const createSafeFont = (FontComponent: any, config: any) => {
+    try {
+        return FontComponent({
+            ...config,
+            preload: false,
+            display: "optional",
+            fallback: config.fallback || ["cursive"],
+        });
+    } catch (error) {
+        console.warn(`Failed to load font: ${error}`);
+        // Return a fallback configuration
+        return {
+            className: "",
+            style: { fontFamily: config.fallback?.[0] || "cursive" },
+            variable: config.variable || "",
+        };
+    }
+};
+
 // Default Fonts
-export const outfit = Outfit({
+export const outfit = createSafeFont(Outfit, {
     subsets: ["latin"],
     display: "swap",
     adjustFontFallback: false,
+    fallback: ["system-ui", "sans-serif"],
 });
 
 // Signature fonts
-export const dancingScript = Dancing_Script({
+export const dancingScript = createSafeFont(Dancing_Script, {
     subsets: ["latin"],
     weight: "400",
     variable: "--font-dancing-script",
-    preload: false,
-    display: "optional",
     fallback: ["cursive"],
 });
 
-export const parisienne = Parisienne({
+export const parisienne = createSafeFont(Parisienne, {
     subsets: ["latin"],
     weight: "400",
     variable: "--font-parisienne",
-    preload: false,
-    display: "optional",
     fallback: ["cursive"],
 });
 
-export const greatVibes = Great_Vibes({
+export const greatVibes = createSafeFont(Great_Vibes, {
     subsets: ["latin"],
     weight: "400",
     variable: "--font-great-vibes",
-    preload: false,
-    display: "optional",
     fallback: ["cursive"],
 });
 
-export const alexBrush = Alex_Brush({
+export const alexBrush = createSafeFont(Alex_Brush, {
     subsets: ["latin"],
     weight: "400",
     variable: "--font-alex-brush",
-    preload: false,
-    display: "optional",
     fallback: ["cursive"],
 });
