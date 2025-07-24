@@ -38,11 +38,18 @@ export async function generatePdfService(req: NextRequest) {
 		browser = await puppeteer.launch({
 			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
 			headless: "new",
+		          // 指定用户数据目录，与 Dockerfile 中创建的目录一致
+		          userDataDir: '/home/nextjs/chromium-data',
 			args: [
 				"--no-sandbox",
 				"--disable-setuid-sandbox",
 				"--disable-dev-shm-usage",
-				"--disable-gpu"
+				"--disable-gpu",
+		              // 禁用崩溃报告以避免 Crashpad 错误
+		              "--disable-crash-reporter",
+		              // 在 Docker 中优化性能的常用参数
+		              "--no-zygote",
+		              "--single-process"
 			],
 			defaultViewport: { width: 1280, height: 800 },
 		});
