@@ -1,62 +1,42 @@
-FROM node:22-alpine AS build
+# ------- build stage -------
+FROM node:22-alpine3.19 AS build
 
 WORKDIR /app
 
-# Install dependencies needed for Puppeteer and build
+# Puppeteer / Chromium 运行时依赖
 RUN apk add --no-cache \
     chromium \
     nss \
     freetype \
-    freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    udev \
+    gcompat
 
-# Disable Next.js telemetry and configure Puppeteer
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
-
-# Create missing font-manifest.json file that Next.js expects
-RUN echo '{}' > .next/server/font-manifest.json
-
-# Clean up and keep only production dependencies
+RUN npm run build && echo '{}' > .next/server/font-manifest.json
 RUN npm prune --production && npm cache clean --force
 
+# ------- runtime stage -------
+FROM node:22-alpine3.19 AS production
 
-FROM node:22-alpine AS production
+RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont udev gcompat
 
-# Install runtime dependencies for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=build --chown=nextjs:nodejs /app/public ./public
-
-USER nextjs
-
+WORKDIR /app
+COPY --from=build --chown=1001:1001 /app /app
+USER 1001
 EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["npm","start"]
 

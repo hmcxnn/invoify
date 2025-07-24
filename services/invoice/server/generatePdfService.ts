@@ -31,30 +31,20 @@ export async function generatePdfService(req: NextRequest) {
 		const InvoiceTemplate = await getInvoiceTemplate(templateId);
 		const htmlTemplate = ReactDOMServer.renderToStaticMarkup(InvoiceTemplate(body));
 
-		// Use puppeteer instead of puppeteer-core for better Docker compatibility
+		// Use puppeteer with simplified Docker-compatible configuration
 		const puppeteer = await import("puppeteer");
 		console.log("Using Puppeteer with system Chromium");
 		
 		browser = await puppeteer.launch({
+			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+			headless: "new",
 			args: [
 				"--no-sandbox",
-				"--disable-setuid-sandbox", 
+				"--disable-setuid-sandbox",
 				"--disable-dev-shm-usage",
-				"--disable-accelerated-2d-canvas",
-				"--no-first-run",
-				"--no-zygote",
-				"--single-process",
-				"--disable-gpu",
-				"--disable-background-timer-throttling",
-				"--disable-backgrounding-occluded-windows",
-				"--disable-renderer-backgrounding",
-				"--disable-features=TranslateUI",
-				"--disable-ipc-flooding-protection"
+				"--disable-gpu"
 			],
-			defaultViewport: { width: 1920, height: 1080 },
-			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-			headless: "new",
-			ignoreHTTPSErrors: true,
+			defaultViewport: { width: 1280, height: 800 },
 		});
 
 		if (!browser) {
