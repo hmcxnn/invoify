@@ -42,7 +42,9 @@ export async function generatePdfService(req: NextRequest) {
 				"--no-sandbox",
 				"--disable-setuid-sandbox",
 				"--disable-dev-shm-usage",
-				"--disable-gpu"
+				"--disable-gpu",
+				"--font-render-hinting=none",
+				"--disable-font-subpixel-positioning"
 			],
 			defaultViewport: { width: 1280, height: 800 },
 		});
@@ -52,6 +54,32 @@ export async function generatePdfService(req: NextRequest) {
 		}
 
 		page = await browser.newPage();
+		
+		// Pre-inject Chinese font CSS
+		await page.setContent(`
+			<html>
+			<head>
+				<style>
+					@font-face {
+						font-family: 'Chinese';
+						src: local('Noto Sans CJK SC'),
+							 local('WenQuanYi Zen Hei'),
+							 local('WenQuanYi Micro Hei'),
+							 local('DejaVu Sans');
+					}
+					* {
+						font-family: 'Chinese', 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif !important;
+					}
+					body {
+						font-family: 'Chinese', 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif !important;
+					}
+				</style>
+			</head>
+			<body></body>
+			</html>
+		`, { waitUntil: 'load' });
+
+		// Then set actual content
 		await page.setContent(await htmlTemplate, {
 			waitUntil: ["networkidle0", "load", "domcontentloaded"],
 			timeout: 30000,
@@ -60,6 +88,21 @@ export async function generatePdfService(req: NextRequest) {
 		await page.addStyleTag({
 			url: TAILWIND_CDN,
 		});
+
+		// Force Chinese font styles
+		await page.addStyleTag({
+			content: `
+				* {
+					font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'WenQuanYi Micro Hei', 'DejaVu Sans', sans-serif !important;
+				}
+				.invoice-content, .invoice-template {
+					font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif !important;
+				}
+			`
+		});
+
+		// Wait for fonts to load
+		await page.evaluateHandle('document.fonts.ready');
 
 		const pdf: Buffer = await page.pdf({
 			format: "a4",

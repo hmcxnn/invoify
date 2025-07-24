@@ -11,7 +11,14 @@ RUN apk add --no-cache \
     freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    font-noto-cjk \
+    wqy-zenhei \
+    font-wqy-microhei \
+    ttf-dejavu \
+    fontconfig
+
+# Configure font cache
+RUN fc-cache -fv
 
 # Disable Next.js telemetry and configure Puppeteer
 ENV NEXT_TELEMETRY_DISABLED=1 \
@@ -40,7 +47,14 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    font-noto-cjk \
+    wqy-zenhei \
+    font-wqy-microhei \
+    ttf-dejavu \
+    fontconfig
+
+# Configure font cache for runtime
+RUN fc-cache -fv
 
 # Create non‑root user and give it a writable HOME + Crashpad dir
 RUN addgroup -S nextjs -g 1001 \
