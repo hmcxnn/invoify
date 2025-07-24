@@ -42,9 +42,7 @@ export async function generatePdfService(req: NextRequest) {
 				"--no-sandbox",
 				"--disable-setuid-sandbox",
 				"--disable-dev-shm-usage",
-				"--disable-gpu",
-				"--disable-crash-reporter",
-				"--no-crash-upload"
+				"--disable-gpu"
 			],
 			defaultViewport: { width: 1280, height: 800 },
 		});
