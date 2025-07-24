@@ -1,0 +1,43 @@
+curl -X POST http://localhost:3000/api/invoice/generate \
+        -H "Content-Type: application/json" \
+        -d '{
+          "sender": {
+            "name": "Test Company",
+            "address": "123 Test Street",
+            "zipCode": "12345",
+            "city": "Test City",
+            "country": "USA",
+            "email": "test@company.com",
+            "phone": "123-456-7890"
+          },
+          "receiver": {
+            "name": "Client Company",
+            "address": "456 Client Avenue",
+            "zipCode": "67890",
+            "city": "Client City",
+            "country": "USA",
+            "email": "client@company.com",
+            "phone": "098-765-4321"
+          },
+          "details": {
+            "invoiceNumber": "INV-2024-002",
+            "invoiceDate": "2024-01-15T00:00:00.000Z",
+            "dueDate": "2024-02-15T00:00:00.000Z",
+            "currency": "USD",
+            "language": "en",
+            "items": [{
+              "name": "Design Service",
+              "description": "Professional UI/UX design",
+              "quantity": 3,
+              "unitPrice": 75.00,
+              "total": 225.00
+            }],
+            "subTotal": 225.00,
+            "totalAmount": 225.00,
+            "totalAmountInWords": "Two Hundred Twenty-Five Dollars",
+            "paymentTerms": "Net 30",
+            "pdfTemplate": 2
+          }
+        }' \
+        -w "\nHTTP Status: %{http_code}\n" \
+        -s -o test-invoice-template2.pdf)

@@ -5,11 +5,11 @@
 
 @layer base {
     * {
-        font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'WenQuanYi Micro Hei', system-ui, sans-serif;
+        font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'DejaVu Sans', system-ui, sans-serif;
     }
     
     body {
-        font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'WenQuanYi Micro Hei', system-ui, sans-serif;
+        font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'DejaVu Sans', system-ui, sans-serif;
     }
     :root {
         --background: 0 0% 100%;

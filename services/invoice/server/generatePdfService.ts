@@ -64,7 +64,6 @@ export async function generatePdfService(req: NextRequest) {
 						font-family: 'Chinese';
 						src: local('Noto Sans CJK SC'),
 							 local('WenQuanYi Zen Hei'),
-							 local('WenQuanYi Micro Hei'),
 							 local('DejaVu Sans');
 					}
 					* {
@@ -93,7 +92,7 @@ export async function generatePdfService(req: NextRequest) {
 		await page.addStyleTag({
 			content: `
 				* {
-					font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'WenQuanYi Micro Hei', 'DejaVu Sans', sans-serif !important;
+					font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'DejaVu Sans', sans-serif !important;
 				}
 				.invoice-content, .invoice-template {
 					font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif !important;

@@ -13,7 +13,6 @@ RUN apk add --no-cache \
     ca-certificates \
     font-noto-cjk \
     wqy-zenhei \
-    font-wqy-microhei \
     ttf-dejavu \
     fontconfig
 
@@ -49,7 +48,6 @@ RUN apk add --no-cache \
     ca-certificates \
     font-noto-cjk \
     wqy-zenhei \
-    font-wqy-microhei \
     ttf-dejavu \
     fontconfig
 
