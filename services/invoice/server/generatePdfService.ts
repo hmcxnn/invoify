@@ -47,11 +47,13 @@ export async function generatePdfService(req: NextRequest) {
 				"--disable-gpu",
 				"--disable-background-timer-throttling",
 				"--disable-backgrounding-occluded-windows",
-				"--disable-renderer-backgrounding"
+				"--disable-renderer-backgrounding",
+				"--disable-features=TranslateUI",
+				"--disable-ipc-flooding-protection"
 			],
 			defaultViewport: { width: 1920, height: 1080 },
 			executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-			headless: true,
+			headless: "new",
 			ignoreHTTPSErrors: true,
 		});
 
