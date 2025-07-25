@@ -3,6 +3,9 @@ FROM node:22-alpine3.19 AS build
 
 WORKDIR /app
 
+# 使用中国镜像源加速包管理器
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # Puppeteer / Chromium 运行时依赖
 RUN apk add --no-cache \
     chromium \
@@ -26,13 +29,17 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package*.json ./
-RUN npm ci
+# 使用国内 npm 镜像
+RUN npm config set registry https://registry.npmmirror.com && npm ci
 COPY . .
 RUN npm run build && echo '{}' > .next/server/font-manifest.json
 RUN npm prune --production && npm cache clean --force
 
 # ------- runtime stage -------
 FROM node:22-alpine3.19 AS production
+
+# 使用中国镜像源加速包管理器
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 RUN apk add --no-cache \
     chromium \

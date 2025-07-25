@@ -62,9 +62,63 @@ export async function generatePdfService(req: NextRequest) {
 				"--disable-default-apps",
 				"--no-zygote", // 在 Docker 中有用
 				"--single-process", // 在受限环境中有用
+				// 针对中国大陆网络环境的优化 - 彻底断网模式
+				"--disable-sync", // 禁用 Google 同步
+				"--disable-translate", // 禁用翻译服务
+				"--disable-background-networking", // 禁用后台网络
+				"--disable-background-mode", // 禁用后台模式
+				"--disable-client-side-phishing-detection", // 禁用钓鱼检测
+				"--disable-component-update", // 禁用组件更新
+				"--disable-domain-reliability", // 禁用域名可靠性监测
+				"--disable-features=TranslateUI,BlinkGenPropertyTrees", // 禁用更多功能
+				"--disable-ipc-flooding-protection", // 禁用IPC洪水保护
+				"--disable-renderer-accessibility", // 禁用渲染器可访问性
+				"--disable-speech-api", // 禁用语音API
+				"--hide-scrollbars", // 隐藏滚动条
+				"--mute-audio", // 静音
+				"--no-pings", // 禁用ping
+				"--disable-remote-fonts", // 禁用远程字体
+				"--disable-remote-playback-api", // 禁用远程播放API
+				"--disable-features=VizDisplayCompositor,AudioServiceOutOfProcess", // 禁用更多服务
+				"--aggressive-cache-discard", // 积极丢弃缓存
+				"--disable-blink-features=AutomationControlled", // 禁用自动化控制检测
+				// 新增：彻底禁用网络相关功能
+				"--disable-network-service", // 禁用网络服务
+				"--disable-features=NetworkService", // 禁用网络服务特性
+				"--disable-web-bluetooth", // 禁用Web蓝牙
+				"--disable-web-usb", // 禁用Web USB
+				"--disable-webgl", // 禁用WebGL
+				"--disable-webrtc", // 禁用WebRTC
+				"--disable-logging", // 禁用日志
+				"--disable-breakpad", // 禁用Breakpad崩溃报告
+				"--disable-dev-tools", // 禁用开发者工具
+				"--disable-hang-monitor", // 禁用挂起监控
+				"--disable-prompt-on-repost", // 禁用重新提交提示
+				"--disable-component-extensions-with-background-pages", // 禁用后台扩展
+				"--disable-software-rasterizer", // 禁用软件光栅化
+				"--no-service-autorun", // 禁用服务自动运行
+				"--password-store=basic", // 使用基本密码存储
+				"--use-mock-keychain", // 使用模拟钥匙串
+				"--disable-accelerated-2d-canvas", // 禁用2D画布加速
+				"--disable-accelerated-jpeg-decoding", // 禁用JPEG解码加速
+				"--disable-accelerated-mjpeg-decode", // 禁用MJPEG解码加速
+				"--disable-accelerated-video-decode", // 禁用视频解码加速
+				"--disable-extensions-file-access-check", // 禁用扩展文件访问检查
+				"--disable-gl-drawing-for-tests", // 禁用GL绘图测试
+				"--disable-infobars", // 禁用信息栏
+				"--disable-notifications", // 禁用通知
+				"--disable-popup-blocking", // 禁用弹窗阻止
+				"--force-color-profile=srgb", // 强制颜色配置
+				"--metrics-recording-only", // 仅记录指标
+				"--no-crash-upload", // 禁用崩溃上传
+				"--offline", // 离线模式
+				"--disable-background-downloads", // 禁用后台下载
+				"--disable-add-to-shelf", // 禁用添加到架子
+				"--disable-datasaver-prompt", // 禁用数据保护提示
+				"--disable-device-discovery-notifications", // 禁用设备发现通知
 			],
 			defaultViewport: { width: 1280, height: 800 },
-			protocolTimeout: 60000, // 增加协议超时到60秒
+			protocolTimeout: 120000, // 增加协议超时到120秒，适应慢网络
 			handleSIGINT: false,
 			handleSIGTERM: false,
 			handleSIGHUP: false,
