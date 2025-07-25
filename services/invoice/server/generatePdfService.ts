@@ -255,7 +255,7 @@ export async function generatePdfService(req: NextRequest) {
 		.uppercase{text-transform:uppercase}
 		.not-italic{font-style:normal}
 		
-		/* 间距 */
+		/* 间距 - 更紧凑的设置 */
 		.p-0{padding:0}
 		.p-1{padding:.25rem}
 		.p-2{padding:.5rem}
@@ -296,8 +296,14 @@ export async function generatePdfService(req: NextRequest) {
 		.mr-4{margin-right:1rem}
 		.ml-2{margin-left:.5rem}
 		.ml-4{margin-left:1rem}
+		.my-1{margin-top:.25rem;margin-bottom:.25rem}
 		.my-2{margin-top:.5rem;margin-bottom:.5rem}
 		.my-4{margin-top:1rem;margin-bottom:1rem}
+		
+		/* 超紧凑间距 - 专为发票优化 */
+		.space-y-0-5>:not([hidden])~:not([hidden]){margin-top:.125rem}
+		.gap-0-5{gap:.125rem}
+		.gap-1-5{gap:.375rem}
 		
 		/* 边框 */
 		.border{border-width:1px}

@@ -61,8 +61,8 @@ const InvoiceTemplate = (data: InvoiceType) => {
 						<br />
 					</address>
 				</div>
-				<div className='sm:text-right space-y-1'>
-					<div className='grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1'>
+				<div className='sm:text-right space-y-0-5'>
+					<div className='grid grid-cols-2 sm:grid-cols-1 gap-1-5 sm:gap-0-5'>
 						<dl className='grid sm:grid-cols-6 gap-x-3'>
 							<dt className='col-span-3 font-semibold text-gray-800'>Invoice date:</dt>
 							<dd className='col-span-3 text-gray-500'>
@@ -116,8 +116,8 @@ const InvoiceTemplate = (data: InvoiceType) => {
 			</div>
 
 			<div className='mt-1 flex sm:justify-end'>
-				<div className='sm:text-right space-y-1'>
-					<div className='grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1'>
+				<div className='sm:text-right space-y-0-5'>
+					<div className='grid grid-cols-2 sm:grid-cols-1 gap-1-5 sm:gap-0-5'>
 						<dl className='grid sm:grid-cols-5 gap-x-3'>
 							<dt className='col-span-3 font-semibold text-gray-800'>Subtotal:</dt>
 							<dd className='col-span-2 text-gray-500'>
