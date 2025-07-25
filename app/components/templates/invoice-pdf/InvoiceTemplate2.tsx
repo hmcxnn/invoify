@@ -21,24 +21,23 @@ const InvoiceTemplate2 = (data: InvoiceType) => {
                     <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
                         Invoice #
                     </h2>
-                    <span className="mt-1 block text-gray-500">
+                    <span className="mt-0.5 block text-gray-500">
                         {details.invoiceNumber}
                     </span>
                     {details.invoiceLogo && (
                         <img
                             src={details.invoiceLogo}
-                            width={140}
-                            height={100}
+                            style={{ width: '140px', height: '100px', objectFit: 'contain' }}
                             alt={`Logo of ${sender.name}`}
                         />
                     )}
 
-                    <h1 className="mt-2 text-lg md:text-xl font-semibold text-blue-600">
+                    <h1 className="mt-1 text-lg md:text-xl font-semibold text-blue-600">
                         {sender.name}
                     </h1>
                 </div>
                 <div className="text-right">
-                    <address className="mt-4 not-italic text-gray-800">
+                    <address className="mt-2 not-italic text-gray-800">
                         {sender.address}
                         <br />
                         {sender.zipCode}, {sender.city}
@@ -49,7 +48,7 @@ const InvoiceTemplate2 = (data: InvoiceType) => {
                 </div>
             </div>
 
-            <div className="mt-6 grid sm:grid-cols-2 gap-3">
+            <div className="mt-4 grid sm:grid-cols-2 gap-2">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800">
                         Bill to:
@@ -91,7 +90,7 @@ const InvoiceTemplate2 = (data: InvoiceType) => {
                 </div>
             </div>
 
-            <div className="mt-3">
+            <div className="mt-2">
                 <div className="border border-gray-200 p-1 rounded-lg space-y-1">
                     <div className="hidden sm:grid sm:grid-cols-5">
                         <div className="sm:col-span-2 text-xs font-medium text-gray-500 uppercase">
@@ -141,9 +140,9 @@ const InvoiceTemplate2 = (data: InvoiceType) => {
                 </div>
             </div>
 
-            <div className="mt-2 flex sm:justify-end">
-                <div className="w-full max-w-2xl sm:text-right space-y-2">
-                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-3 sm:gap-2">
+            <div className="mt-1 flex sm:justify-end">
+                <div className="w-full max-w-2xl sm:text-right space-y-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1">
                         <dl className="grid sm:grid-cols-5 gap-x-3">
                             <dt className="col-span-3 font-semibold text-gray-800">
                                 Subtotal:
@@ -276,17 +275,16 @@ const InvoiceTemplate2 = (data: InvoiceType) => {
 
             {/* Signature */}
             {details?.signature?.data && isDataUrl(details?.signature?.data) ? (
-                <div className="mt-6">
+                <div className="mt-3">
                     <p className="font-semibold text-gray-800">Signature:</p>
                     <img
                         src={details.signature.data}
-                        width={120}
-                        height={60}
+                        style={{ width: '120px', height: '60px', objectFit: 'contain' }}
                         alt={`Signature of ${sender.name}`}
                     />
                 </div>
             ) : details.signature?.data ? (
-                <div className="mt-6">
+                <div className="mt-3">
                     <p className="text-gray-800">Signature:</p>
                     <p
                         style={{

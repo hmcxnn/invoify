@@ -302,8 +302,14 @@ export async function generatePdfService(req: NextRequest) {
 		
 		/* 超紧凑间距 - 专为发票优化 */
 		.space-y-0-5>:not([hidden])~:not([hidden]){margin-top:.125rem}
+		.space-y-0>:not([hidden])~:not([hidden]){margin-top:0}
+		.gap-0{gap:0}
 		.gap-0-5{gap:.125rem}
 		.gap-1-5{gap:.375rem}
+		
+		/* 发票专用超小间距 */
+		.invoice-compact-spacing>:not([hidden])~:not([hidden]){margin-top:.0625rem}
+		.invoice-mini-gap{gap:.0625rem}
 		
 		/* 边框 */
 		.border{border-width:1px}

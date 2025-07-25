@@ -22,13 +22,7 @@ const InvoiceTemplate = (data: InvoiceType) => {
 					{details.invoiceLogo && (
 						<img
 							src={details.invoiceLogo}
-							style={{
-								maxWidth: '140px',
-								maxHeight: '80px',  
-								width: 'auto',
-								height: 'auto',
-								objectFit: 'contain'
-							}}
+							style={{ width: '140px', height: '100px', objectFit: 'contain' }}
 							alt={`Logo of ${sender.name}`}
 						/>
 					)}
@@ -36,7 +30,7 @@ const InvoiceTemplate = (data: InvoiceType) => {
 				</div>
 				<div className='text-right'>
 					<h2 className='text-2xl md:text-3xl font-semibold text-gray-800'>Invoice #</h2>
-					<span className='mt-1 block text-gray-500'>{details.invoiceNumber}</span>
+					<span className='mt-0.5 block text-gray-500'>{details.invoiceNumber}</span>
 					<address className='mt-2 not-italic text-gray-800'>
 						{sender.address}
 						<br />
@@ -48,7 +42,7 @@ const InvoiceTemplate = (data: InvoiceType) => {
 				</div>
 			</div>
 
-			<div className='mt-4 grid sm:grid-cols-2 gap-3'>
+			<div className='mt-4 grid sm:grid-cols-2 gap-2'>
 				<div>
 					<h3 className='text-lg font-semibold text-gray-800'>Bill to:</h3>
 					<h3 className='text-lg font-semibold text-gray-800'>{receiver.name}</h3>
@@ -61,8 +55,8 @@ const InvoiceTemplate = (data: InvoiceType) => {
 						<br />
 					</address>
 				</div>
-				<div className='sm:text-right space-y-0-5'>
-					<div className='grid grid-cols-2 sm:grid-cols-1 gap-1-5 sm:gap-0-5'>
+				<div className='sm:text-right space-y-1'>
+					<div className='grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1'>
 						<dl className='grid sm:grid-cols-6 gap-x-3'>
 							<dt className='col-span-3 font-semibold text-gray-800'>Invoice date:</dt>
 							<dd className='col-span-3 text-gray-500'>
@@ -79,7 +73,7 @@ const InvoiceTemplate = (data: InvoiceType) => {
 				</div>
 			</div>
 
-			<div className='mt-3'>
+			<div className='mt-2'>
 				<div className='border border-gray-200 p-1 rounded-lg space-y-1'>
 					<div className='hidden sm:grid sm:grid-cols-5'>
 						<div className='sm:col-span-2 text-xs font-medium text-gray-500 uppercase'>Item</div>
@@ -116,8 +110,8 @@ const InvoiceTemplate = (data: InvoiceType) => {
 			</div>
 
 			<div className='mt-1 flex sm:justify-end'>
-				<div className='sm:text-right space-y-0-5'>
-					<div className='grid grid-cols-2 sm:grid-cols-1 gap-1-5 sm:gap-0-5'>
+				<div className='sm:text-right space-y-1'>
+					<div className='grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-1'>
 						<dl className='grid sm:grid-cols-5 gap-x-3'>
 							<dt className='col-span-3 font-semibold text-gray-800'>Subtotal:</dt>
 							<dd className='col-span-2 text-gray-500'>
@@ -176,16 +170,16 @@ const InvoiceTemplate = (data: InvoiceType) => {
 			</div>
 
 			<div>
-				<div className='my-3'>
-					<div className='my-1'>
+				<div className='my-4'>
+					<div className='my-2'>
 						<p className='font-semibold text-blue-600'>Additional notes:</p>
 						<p className='font-regular text-gray-800'>{details.additionalNotes}</p>
 					</div>
-					<div className='my-1'>
+					<div className='my-2'>
 						<p className='font-semibold text-blue-600'>Payment terms:</p>
 						<p className='font-regular text-gray-800'>{details.paymentTerms}</p>
 					</div>
-					<div className='my-1'>
+					<div className='my-2'>
 						<span className='font-semibold text-md text-gray-800'>
 							Please send the payment to this address
 							<p className='text-sm'>Bank: {details.paymentInformation?.bankName}</p>
@@ -205,17 +199,16 @@ const InvoiceTemplate = (data: InvoiceType) => {
 
 			{/* Signature */}
 			{details?.signature?.data && isDataUrl(details?.signature?.data) ? (
-				<div className='mt-6'>
+				<div className='mt-3'>
 					<p className='font-semibold text-gray-800'>Signature:</p>
 					<img
 						src={details.signature.data}
-						width={120}
-						height={60}
+						style={{ width: '120px', height: '60px', objectFit: 'contain' }}
 						alt={`Signature of ${sender.name}`}
 					/>
 				</div>
 			) : details.signature?.data ? (
-				<div className='mt-6'>
+				<div className='mt-3'>
 					<p className='text-gray-800'>Signature:</p>
 					<p
 						style={{
