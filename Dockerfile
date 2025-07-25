@@ -15,14 +15,16 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    ttf-dejavu \
-    ttf-droid \
-    ttf-liberation \
     udev \
     gcompat \
+    fontconfig \
+    && apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     font-noto \
     font-noto-cjk \
-    fontconfig
+    || apk add --no-cache \
+    ttf-dejavu \
+    ttf-droid \
+    ttf-liberation
 
 ENV NEXT_TELEMETRY_DISABLED=1 \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
@@ -49,14 +51,16 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    ttf-dejavu \
-    ttf-droid \
-    ttf-liberation \
     udev \
     gcompat \
+    fontconfig \
+    && apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     font-noto \
     font-noto-cjk \
-    fontconfig
+    || apk add --no-cache \
+    ttf-dejavu \
+    ttf-droid \
+    ttf-liberation
 
 # 创建非 root 用户
 RUN addgroup -S nextjs -g 1001 && adduser -S nextjs -u 1001 -G nextjs
