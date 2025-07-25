@@ -37,6 +37,10 @@ COPY . .
 RUN npm run build && echo '{}' > .next/server/font-manifest.json
 RUN npm prune --production && npm cache clean --force
 
+# 复制本地字体文件到构建阶段
+COPY public/assets/fonts/ /usr/share/fonts/
+RUN fc-cache -f -v
+
 # ------- runtime stage -------
 FROM node:22-alpine3.19 AS production
 
@@ -71,8 +75,9 @@ RUN mkdir -p /home/nextjs/.config/chromium/Crashpad \
     && mkdir -p /home/nextjs/.local/share/fonts \
     && chown -R nextjs:nextjs /home/nextjs
 
-# 配置字体缓存
-RUN fc-cache -fv
+# 从构建阶段复制字体并刷新缓存
+COPY --from=build /usr/share/fonts/ /usr/share/fonts/
+RUN fc-cache -f -v
 
 ENV HOME=/home/nextjs \
     XDG_CONFIG_HOME=/home/nextjs/.config \

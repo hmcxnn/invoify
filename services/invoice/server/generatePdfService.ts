@@ -115,7 +115,6 @@ export async function generatePdfService(req: NextRequest) {
 				"--hide-scrollbars", // 隐藏滚动条
 				"--mute-audio", // 静音
 				"--no-pings", // 禁用ping
-				"--disable-remote-fonts", // 禁用远程字体
 				"--disable-remote-playback-api", // 禁用远程播放API
 				"--disable-features=VizDisplayCompositor,AudioServiceOutOfProcess", // 禁用更多服务
 				"--aggressive-cache-discard", // 积极丢弃缓存
@@ -200,12 +199,15 @@ export async function generatePdfService(req: NextRequest) {
 		::before,::after{--tw-content:''}
 		
 		/* 中文字体优化 */
+		html, body, *, h1, h2, h3, h4, h5, h6, p, th, td {
+			font-family: "Outfit", "Noto Sans SC", sans-serif;
+		}
+
 		html{
 			line-height:1.5;
 			-webkit-text-size-adjust:100%;
 			-moz-tab-size:4;
 			tab-size:4;
-			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
 			font-size:14px;
 			-webkit-font-smoothing:antialiased;
 			-moz-osx-font-smoothing:grayscale;
@@ -215,26 +217,19 @@ export async function generatePdfService(req: NextRequest) {
 			margin:0;
 			line-height:inherit;
 			color:#1f2937;
-			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
-		}
-		
-		/* 确保中文字符正确显示 */
-		*{
-			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
 		}
 		
 		h1,h2,h3,h4,h5,h6{
 			font-size:inherit;
 			font-weight:inherit;
 			margin:0;
-			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
 		}
 		
-		p{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif}
+		p{margin:0}
 		a{color:inherit;text-decoration:inherit}
 		button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}
 		table{border-collapse:collapse;border-spacing:0}
-		th,td{padding:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif}
+		th,td{padding:0}
 		
 		/* 文本样式 */
 		.text-xs{font-size:.75rem;line-height:1rem}
