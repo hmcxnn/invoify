@@ -273,9 +273,9 @@ export async function generatePdfService(req: NextRequest) {
 		
 		// 提供更详细的错误信息以便调试
 		const errorDetails = {
-			message: error.message,
-			stack: error.stack,
-			name: error.name,
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			name: error instanceof Error ? error.name : 'UnknownError',
 			timestamp: new Date().toISOString(),
 			environment: {
 				platform: process.platform,
@@ -288,7 +288,7 @@ export async function generatePdfService(req: NextRequest) {
 		
 		return new NextResponse(JSON.stringify({ 
 			error: "Failed to generate PDF", 
-			details: process.env.NODE_ENV === 'development' ? errorDetails : error.message 
+			details: process.env.NODE_ENV === 'development' ? errorDetails : (error instanceof Error ? error.message : String(error))
 		}), {
 			status: 500,
 			headers: {

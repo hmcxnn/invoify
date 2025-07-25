@@ -103,9 +103,9 @@ export async function GET(req: NextRequest) {
 		console.error("Puppeteer health check failed:", error);
 		
 		const errorDetails = {
-			message: error.message,
-			name: error.name,
-			stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+			message: error instanceof Error ? error.message : String(error),
+			name: error instanceof Error ? error.name : 'UnknownError',
+			stack: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined,
 			timestamp: new Date().toISOString(),
 			environment: {
 				platform: process.platform,
