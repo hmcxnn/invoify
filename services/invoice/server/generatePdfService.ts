@@ -26,6 +26,44 @@ export async function generatePdfService(req: NextRequest) {
 	let page;
 
 	try {
+		// 计算缺失的金额字段
+		if (!body.details.subTotal || isNaN(Number(body.details.subTotal))) {
+			body.details.subTotal = body.details.items.reduce((sum, item) => sum + (item.total || 0), 0);
+		}
+		
+		if (!body.details.totalAmount || isNaN(Number(body.details.totalAmount))) {
+			let total = Number(body.details.subTotal);
+			
+			// 应用税收
+			if (body.details.taxDetails?.amount) {
+				if (body.details.taxDetails.amountType === 'percentage') {
+					total += (total * Number(body.details.taxDetails.amount)) / 100;
+				} else {
+					total += Number(body.details.taxDetails.amount);
+				}
+			}
+			
+			// 应用折扣
+			if (body.details.discountDetails?.amount) {
+				if (body.details.discountDetails.amountType === 'percentage') {
+					total -= (total * Number(body.details.discountDetails.amount)) / 100;
+				} else {
+					total -= Number(body.details.discountDetails.amount);
+				}
+			}
+			
+			// 应用运费
+			if (body.details.shippingDetails?.cost) {
+				if (body.details.shippingDetails.costType === 'percentage') {
+					total += (total * Number(body.details.shippingDetails.cost)) / 100;
+				} else {
+					total += Number(body.details.shippingDetails.cost);
+				}
+			}
+			
+			body.details.totalAmount = Math.max(0, total); // 确保不为负数
+		}
+
 		const ReactDOMServer = (await import("react-dom/server")).default;
 		const templateId = body.details.pdfTemplate;
 		const InvoiceTemplate = await getInvoiceTemplate(templateId);
@@ -143,19 +181,62 @@ export async function generatePdfService(req: NextRequest) {
 			timeout: 60000,
 		});
 
-		// 使用内联CSS而不是外部CDN来避免网络问题
+		// 设置页面字符编码
+		await page.setExtraHTTPHeaders({
+			'Accept-Charset': 'utf-8'
+		});
+
+		// 确保页面使用UTF-8编码
+		await page.evaluate(() => {
+			const meta = document.createElement('meta');
+			meta.setAttribute('charset', 'utf-8');
+			document.head.insertBefore(meta, document.head.firstChild);
+		});
+
+		// 使用内联CSS而不是外部CDN来避免网络问题，特别优化中文显示
 		const tailwindCSS = `
-		/* Tailwind CSS 基础样式 - 针对发票模板优化 */
+		/* Tailwind CSS 基础样式 - 针对发票模板和中文显示优化 */
 		*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
 		::before,::after{--tw-content:''}
-		html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:14px}
-		body{margin:0;line-height:inherit;color:#1f2937}
-		h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;margin:0}
-		p{margin:0}
+		
+		/* 中文字体优化 */
+		html{
+			line-height:1.5;
+			-webkit-text-size-adjust:100%;
+			-moz-tab-size:4;
+			tab-size:4;
+			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
+			font-size:14px;
+			-webkit-font-smoothing:antialiased;
+			-moz-osx-font-smoothing:grayscale;
+		}
+		
+		body{
+			margin:0;
+			line-height:inherit;
+			color:#1f2937;
+			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
+		}
+		
+		/* 确保中文字符正确显示 */
+		*{
+			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
+		}
+		
+		h1,h2,h3,h4,h5,h6{
+			font-size:inherit;
+			font-weight:inherit;
+			margin:0;
+			font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif;
+		}
+		
+		p{margin:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif}
 		a{color:inherit;text-decoration:inherit}
 		button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}
 		table{border-collapse:collapse;border-spacing:0}
-		th,td{padding:0}
+		th,td{padding:0;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei","Helvetica Neue",Arial,sans-serif}
+		
+		/* 文本样式 */
 		.text-xs{font-size:.75rem;line-height:1rem}
 		.text-sm{font-size:.875rem;line-height:1.25rem}
 		.text-base{font-size:1rem;line-height:1.5rem}
@@ -172,6 +253,9 @@ export async function generatePdfService(req: NextRequest) {
 		.text-left{text-align:left}
 		.text-justify{text-align:justify}
 		.uppercase{text-transform:uppercase}
+		.not-italic{font-style:normal}
+		
+		/* 间距 */
 		.p-0{padding:0}
 		.p-1{padding:.25rem}
 		.p-2{padding:.5rem}
@@ -202,7 +286,9 @@ export async function generatePdfService(req: NextRequest) {
 		.mb-4{margin-bottom:1rem}
 		.mb-6{margin-bottom:1.5rem}
 		.mb-8{margin-bottom:2rem}
+		.mt-1{margin-top:.25rem}
 		.mt-2{margin-top:.5rem}
+		.mt-3{margin-top:.75rem}
 		.mt-4{margin-top:1rem}
 		.mt-6{margin-top:1.5rem}
 		.mt-8{margin-top:2rem}
@@ -210,6 +296,10 @@ export async function generatePdfService(req: NextRequest) {
 		.mr-4{margin-right:1rem}
 		.ml-2{margin-left:.5rem}
 		.ml-4{margin-left:1rem}
+		.my-2{margin-top:.5rem;margin-bottom:.5rem}
+		.my-4{margin-top:1rem;margin-bottom:1rem}
+		
+		/* 边框 */
 		.border{border-width:1px}
 		.border-0{border-width:0}
 		.border-t{border-top-width:1px}
@@ -220,6 +310,8 @@ export async function generatePdfService(req: NextRequest) {
 		.border-gray-300{border-color:#d1d5db}
 		.border-gray-400{border-color:#9ca3af}
 		.border-black{border-color:#000}
+		
+		/* 背景和颜色 */
 		.bg-white{background-color:#fff}
 		.bg-gray-50{background-color:#f9fafb}
 		.bg-gray-100{background-color:#f3f4f6}
@@ -230,6 +322,9 @@ export async function generatePdfService(req: NextRequest) {
 		.text-gray-700{color:#374151}
 		.text-gray-800{color:#1f2937}
 		.text-gray-900{color:#111827}
+		.text-blue-600{color:#2563eb}
+		
+		/* 布局 */
 		.w-full{width:100%}
 		.w-1\/2{width:50%}
 		.w-1\/3{width:33.333333%}
@@ -246,6 +341,22 @@ export async function generatePdfService(req: NextRequest) {
 		.table-auto{table-layout:auto}
 		.table-fixed{table-layout:fixed}
 		.hidden{display:none}
+		.grid{display:grid}
+		
+		/* Grid 系统 */
+		.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+		.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+		.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+		.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+		.col-span-2{grid-column:span 2/span 2}
+		.col-span-3{grid-column:span 3/span 3}
+		.col-span-full{grid-column:1/-1}
+		.gap-x-3{column-gap:.75rem}
+		.gap-y-1{row-gap:.25rem}
+		.gap-3{gap:.75rem}
+		.gap-2{gap:.5rem}
+		
+		/* Flex 布局 */
 		.flex-col{flex-direction:column}
 		.flex-wrap{flex-wrap:wrap}
 		.items-center{align-items:center}
@@ -254,22 +365,44 @@ export async function generatePdfService(req: NextRequest) {
 		.justify-center{justify-content:center}
 		.justify-between{justify-content:space-between}
 		.justify-end{justify-content:flex-end}
-		.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem * var(--tw-space-y-reverse))}
-		.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem * var(--tw-space-y-reverse))}
-		.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}
+		
+		/* 响应式 */
+		@media (min-width:640px){
+			.sm\\:grid{display:grid}
+			.sm\\:hidden{display:none}
+			.sm\\:block{display:block}
+			.sm\\:grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+			.sm\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+			.sm\\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+			.sm\\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}
+			.sm\\:col-span-2{grid-column:span 2/span 2}
+			.sm\\:text-right{text-align:right}
+			.sm\\:justify-end{justify-content:flex-end}
+			.sm\\:gap-2{gap:.5rem}
+		}
+		
+		@media (min-width:768px){
+			.md\\:text-xl{font-size:1.25rem;line-height:1.75rem}
+			.md\\:text-3xl{font-size:1.875rem;line-height:2.25rem}
+		}
+		
+		/* 其他工具类 */
+		.space-y-1>:not([hidden])~:not([hidden]){margin-top:.25rem}
+		.space-y-2>:not([hidden])~:not([hidden]){margin-top:.5rem}
 		.rounded{border-radius:.25rem}
 		.rounded-lg{border-radius:.5rem}
 		.shadow{box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px 0 rgba(0,0,0,.06)}
-		.shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
 		.overflow-hidden{overflow:hidden}
-		.max-w-4xl{max-width:56rem}
-		.container{width:100%}
-		@media (min-width:640px){.container{max-width:640px}}
-		@media (min-width:768px){.container{max-width:768px}}
-		@media (min-width:1024px){.container{max-width:1024px}}
-		@media (min-width:1280px){.container{max-width:1280px}}
-		@media (min-width:1536px){.container{max-width:1536px}}
-		@media print{.print\\:hidden{display:none}}
+		.whitespace-pre-line{white-space:pre-line}
+		
+		/* 打印样式 */
+		@media print{
+			*{
+				color-adjust:exact !important;
+				-webkit-print-color-adjust:exact !important;
+			}
+			.print\\:hidden{display:none}
+		}
 		`;
 
 		// 更稳健的样式注入
